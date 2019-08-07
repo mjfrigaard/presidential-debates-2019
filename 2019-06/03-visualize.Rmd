@@ -77,7 +77,7 @@ visdat::vis_miss(TwitterUsersData) +
 
 We will use tables and graphs to explore the data we imported and wrangled and see if it looks like the `fivethirtyeight` data. We will start with a table of the data on voter preferences on candidates before and after the night of the election. 
 
-```{r GSheetCand538Fav}
+```{r GSheetCand538Fav, eval=FALSE}
 dplyr::filter(GSheetCand538Fav, candidate %in% c("Elizabeth Warren",
    "Tim Ryan", "Beto O’Rourke", "Amy Klobuchar", "Jay Inslee",
    "Tulsi Gabbard", "John Delaney", "Bill de Blasio", "Julian Castro",

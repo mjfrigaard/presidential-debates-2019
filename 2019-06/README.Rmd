@@ -5,6 +5,14 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
+# create figs folder ----
+if (!file.exists("figs/")) {
+    dir.create("figs/")
+}
+# create data folder ----
+if (!file.exists("data/")) {
+    dir.create("data/")
+}
 knitr::opts_chunk$set(
     echo = TRUE, # show all code
     tidy = FALSE, # cleaner code printing
@@ -129,7 +137,7 @@ visdat::vis_miss(TwitterUsersData) +
 
 We will use tables and graphs to explore the data we imported and wrangled and see if it looks like the `fivethirtyeight` data. We will start with a table of the data on voter preferences on candidates before and after the night of the election. 
 
-```{r GSheetCand538Fav}
+```{r GSheetCand538Fav, eval=FALSE}
 dplyr::filter(GSheetCand538Fav, candidate %in% c("Elizabeth Warren",
    "Tim Ryan", "Beto O’Rourke", "Amy Klobuchar", "Jay Inslee",
    "Tulsi Gabbard", "John Delaney", "Bill de Blasio", "Julian Castro",
@@ -171,9 +179,9 @@ GtrendWikiIOTAirTime %>%
   ggplot2::labs(
     x = "Date",
     y = "Google search hits",
-  subtitle = "Google trends for candidates with > 10.0% polling") + 
+  subtitle = "Google trends for candidates \nwith > 10.0% polling") + 
     # add themes from ggthemes 
-  ggthemes::theme_wsj(base_size = 7.5, 
+  ggthemes::theme_wsj(base_size = 9.5, 
                       title_family = "mono") +
     # use facets for both candidates on the same graph
   ggplot2::facet_wrap(~ keyword, ncol = 2)
@@ -181,7 +189,9 @@ GtrendWikiIOTAirTime %>%
 
 This shows Warren doing well after the first night. If we narrow this down to the week of the debates and widen the list of candidates, we see the following:
 
-### Candidates with low polling criterions
+### Candidates with medium and high polling criterions (last seven days)
+
+We will repeat the graph above, but with a lower range of days. We will also add the `2-4.0% of voters` category.
 
 ```{r 7-day-top-3}
 GtrendWikiIOTAirTime7day <- GtrendWikiIOTAirTime %>% 
@@ -199,21 +209,19 @@ GtrendWikiIOTAirTime7day %>%
     y = "Google search hits",
     title = "Google search hits",
     subtitle = "Democratic candidates with 1.0-4.0% of voters") + 
-  ggthemes::theme_clean(base_size = 7.5) +
+  ggthemes::theme_clean(base_size = 9) +
   ggplot2::facet_wrap(~ keyword, ncol = 2)
 ```
 
-Now we can see Warren is definitely ahead of O'Rourke, but Booker has also moved above Warren. 
+Now we can see Warren is definitely ahead of O'Rourke, but also shows Booker has also moved above Warren. 
 
-### Candidates with low polling criterions
+### Candidates with low polling criterions (last seven days)
 
 For candidates in the lowest percentage of Polling Criterion, `1 - 1.3% of voters` we see the following: 
 
 ```{r google-middle-percent-candidates}
 GtrendWikiIOTAirTime7day %>% 
-  dplyr::filter(poll_perc_fct %in% c("> 10.0% of voters", 
-                                     "2-4.0% of voters",
-                                     "1 - 1.3% of voters")) %>% 
+  dplyr::filter(poll_perc_fct %in% c("1 - 1.3% of voters")) %>% 
   ggplot2::ggplot(aes(x = date, 
              y = hits, 
              color = keyword)) +
@@ -226,7 +234,7 @@ GtrendWikiIOTAirTime7day %>%
                    " and ",
                    max(GtrendWikiIOTAirTime7day$date)),
     subtitle = "Google search hits for democratic candidates") + 
-    ggthemes::theme_tufte(base_size = 7) +
+    ggthemes::theme_tufte(base_size = 9) +
     ggplot2::facet_wrap(~ keyword, ncol = 2)
 ```
 
@@ -243,12 +251,13 @@ GtrendWikiIOTAirTime7day %>%
              y = hits, 
              color = keyword)) +
   ggplot2::geom_line(aes(group = keyword), show.legend = FALSE) + 
-  ggplot2::labs(subtitle = "Women Democratic Candidates",
+  ggplot2::labs(
+   subtitle = "Women Democratic Candidates June 26, 2019 Democratic candidates",
     caption = paste0("Data between ", 
                    min(GtrendWikiIOTAirTime7day$date),
                    " and ",
                    max(GtrendWikiIOTAirTime7day$date))) + 
-  ggthemes::theme_fivethirtyeight(base_size = 8) + 
+  ggthemes::theme_fivethirtyeight(base_size = 9.5) + 
   ggplot2::facet_wrap(. ~ keyword)
 ```
 
@@ -270,7 +279,7 @@ GtrendWikiIOTAirTime7day %>%
   ggplot2::labs(
     x = "Date",
     y = "Google search hits",
-    subtitle = "Google search trends for June 26, 2019 Democratic candidates",
+    subtitle = "Google search trends for Men candidates \nJune 26, 2019 Democratic candidates",
     caption = "source: http://bit.ly/2SKZXt4") +
   ggthemes::theme_few() +
   ggplot2::facet_wrap(. ~ keyword, ncol = 3)
